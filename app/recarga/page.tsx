@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { SyntheticEvent, useMemo, useState } from "react";
 
 type PaymentMethod = "PSE" | "Tarjeta" | "Nequi";
 type SubmitStatus = "idle" | "loading" | "success" | "error";
@@ -52,7 +52,7 @@ export default function RecargaPage() {
     return "";
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("idle");
     setMessage("");
