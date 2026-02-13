@@ -24,3 +24,20 @@ export type CustomerSummary = {
   lines: CustomerLine[];
   recentMovements: RecentMovement[];
 };
+
+export type PaymentMethod = "PSE" | "Tarjeta" | "Nequi";
+
+export type TopupRequest = {
+  amount: number;
+  method: PaymentMethod;
+};
+
+export type TopupResponse = {
+  ok: true;
+  receipt: RecentMovement;
+  balance: number;
+};
+
+export type BuyPackageRequest = {
+  packageCode: string;
+};

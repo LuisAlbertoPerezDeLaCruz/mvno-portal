@@ -1,16 +1,10 @@
 "use client";
 
+import { topupApi } from "@/lib/api";
+import { PaymentMethod, RecentMovement } from "@/lib/types";
 import { SyntheticEvent, useMemo, useState } from "react";
 
-type PaymentMethod = "PSE" | "Tarjeta" | "Nequi";
 type SubmitStatus = "idle" | "loading" | "success" | "error";
-
-type TopupReceipt = {
-  id: string;
-  amount: number;
-  method: PaymentMethod;
-  createdAt: string;
-};
 
 const PAYMENT_METHODS: PaymentMethod[] = ["PSE", "Tarjeta", "Nequi"];
 const QUICK_AMOUNTS = [10000, 20000, 30000, 50000];
@@ -35,7 +29,7 @@ export default function RecargaPage() {
   const [method, setMethod] = useState<PaymentMethod>("PSE");
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [message, setMessage] = useState("");
-  const [receipts, setReceipts] = useState<TopupReceipt[]>([]);
+  const [receipts, setReceipts] = useState<RecentMovement[]>([]);
 
   const amountNumber = useMemo(() => Number(amountInput), [amountInput]);
 
@@ -67,19 +61,20 @@ export default function RecargaPage() {
     setStatus("loading");
     setMessage("Procesando pago...");
 
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    try {
+      const response = await topupApi({
+        amount: amountNumber,
+        method,
+      });
 
-    const newReceipt: TopupReceipt = {
-      id: `topup-${Date.now()}`,
-      amount: amountNumber,
-      method,
-      createdAt: new Date().toISOString(),
-    };
-
-    setReceipts((prev) => [newReceipt, ...prev]);
-    setStatus("success");
-    setMessage(`Recarga exitosa por ${formatCurrencyCop(amountNumber)} con ${method}.`);
-    setAmountInput("");
+      setReceipts((prev) => [response.receipt, ...prev]);
+      setStatus("success");
+      setMessage(`Recarga exitosa. Nuevo saldo: ${formatCurrencyCop(response.balance)}.`);
+      setAmountInput("");
+    } catch (submitError) {
+      setStatus("error");
+      setMessage(submitError instanceof Error ? submitError.message : "Error procesando recarga.");
+    }
   }
 
   return (
@@ -184,7 +179,7 @@ export default function RecargaPage() {
                   <p className="text-gray-500">{formatDate(receipt.createdAt)}</p>
                 </div>
                 <span className="rounded-full bg-white px-3 py-1 text-xs">
-                  {receipt.method}
+                  {receipt.title}
                 </span>
               </li>
             ))}

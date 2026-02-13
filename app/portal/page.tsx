@@ -1,4 +1,8 @@
-import { customerSummaryMock } from "@/lib/mock";
+"use client";
+
+import { getCustomerSummaryApi } from "@/lib/api";
+import { CustomerSummary } from "@/lib/types";
+import { useEffect, useState } from "react";
 
 function formatCurrencyCop(value: number) {
   return new Intl.NumberFormat("es-CO", {
@@ -16,7 +20,53 @@ function formatDate(dateValue: string) {
 }
 
 export default function PortalPage() {
-  const summary = customerSummaryMock;
+  const [summary, setSummary] = useState<CustomerSummary | null>(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadSummary() {
+      try {
+        const data = await getCustomerSummaryApi();
+        if (mounted) {
+          setSummary(data);
+          setError("");
+        }
+      } catch (loadError) {
+        if (mounted) {
+          setError(loadError instanceof Error ? loadError.message : "No se pudo cargar");
+        }
+      }
+    }
+
+    loadSummary();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  if (error) {
+    return (
+      <main className="mx-auto max-w-6xl p-6">
+        <p className="rounded-lg bg-red-50 p-3 text-red-700">
+          Error cargando el resumen: {error}
+        </p>
+      </main>
+    );
+  }
+
+  if (!summary) {
+    return (
+      <main className="mx-auto max-w-6xl p-6">
+        <p className="rounded-lg bg-slate-100 p-3 text-slate-700">
+          Cargando resumen del cliente...
+        </p>
+      </main>
+    );
+  }
+
   const dataRemaining = Math.max(summary.dataLimitGb - summary.dataUsedGb, 0);
 
   return (
