@@ -38,14 +38,6 @@ export async function getCustomerSummaryApi(): Promise<CustomerSummary> {
   return parseJson<CustomerSummary>(response);
 }
 
-export async function getCustomerSummaryApi_(): Promise<CustomerSummary> {
-  const response = await fetch("/api/customer/summary", {
-    method: "GET",
-    cache: "no-store",
-  });
-  return parseJson<CustomerSummary>(response);
-}
-
 export async function topupApi(payload: TopupRequest): Promise<TopupResponse> {
   const response = await fetch("/api/topup", {
     method: "POST",
