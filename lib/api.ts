@@ -5,6 +5,8 @@ import {
   TopupResponse,
 } from "./types";
 
+import { customerSummaryMock } from "./mock";
+
 async function parseJson<T>(response: Response): Promise<T> {
   if (!response.ok) {
     let message = `HTTP ${response.status}`;
@@ -22,6 +24,21 @@ async function parseJson<T>(response: Response): Promise<T> {
 }
 
 export async function getCustomerSummaryApi(): Promise<CustomerSummary> {
+  const useMock = process.env.NEXT_PUBLIC_USE_BLOCK2_MOCK === "true";
+
+  if (useMock) {
+    return customerSummaryMock;
+  }
+
+  const response = await fetch("/api/customer/summary", {
+    method: "GET",
+    cache: "no-store",
+  });
+
+  return parseJson<CustomerSummary>(response);
+}
+
+export async function getCustomerSummaryApi_(): Promise<CustomerSummary> {
   const response = await fetch("/api/customer/summary", {
     method: "GET",
     cache: "no-store",
