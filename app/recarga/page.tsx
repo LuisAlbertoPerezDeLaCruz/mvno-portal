@@ -2,7 +2,7 @@
 
 import { topupApi } from "@/lib/api";
 import { PaymentMethod, RecentMovement } from "@/lib/types";
-import { SyntheticEvent, useMemo, useState } from "react";
+import { SyntheticEvent, useMemo, useState, useEffect } from "react";
 
 type SubmitStatus = "idle" | "loading" | "success" | "error";
 
@@ -30,6 +30,12 @@ export default function RecargaPage() {
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [message, setMessage] = useState("");
   const [receipts, setReceipts] = useState<RecentMovement[]>([]);
+
+  // Debug: Monitor status changes
+  useEffect(() => {
+    console.log("Status changed to:", status);
+    // PON BREAKPOINT AQUÍ para ver el valor actualizado
+  }, [status]);
 
   const amountNumber = useMemo(() => Number(amountInput), [amountInput]);
 
@@ -59,6 +65,7 @@ export default function RecargaPage() {
     }
 
     setStatus("loading");
+
     setMessage("Procesando pago...");
 
     try {
