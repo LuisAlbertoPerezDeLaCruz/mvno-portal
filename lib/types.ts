@@ -41,3 +41,9 @@ export type TopupResponse = {
 export type BuyPackageRequest = {
   packageCode: string;
 };
+
+export type BuyPackageResponse = {
+  ok: true;
+  receipt: RecentMovement;
+  balance: number;
+};

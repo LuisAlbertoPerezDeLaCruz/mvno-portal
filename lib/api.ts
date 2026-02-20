@@ -1,5 +1,6 @@
 import {
   BuyPackageRequest,
+  BuyPackageResponse,
   CustomerSummary,
   TopupRequest,
   TopupResponse,
@@ -47,11 +48,11 @@ export async function topupApi(payload: TopupRequest): Promise<TopupResponse> {
   return parseJson<TopupResponse>(response);
 }
 
-export async function buyPackageApi(payload: BuyPackageRequest) {
+export async function buyPackageApi(payload: BuyPackageRequest): Promise<BuyPackageResponse> {
   const response = await fetch("/api/buy-package", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  return parseJson<{ ok: true; balance: number }>(response);
+  return parseJson<BuyPackageResponse>(response);
 }

@@ -1,5 +1,5 @@
 import { applyBuyPackage } from "@/lib/mock-db";
-import { BuyPackageRequest } from "@/lib/types";
+import { BuyPackageRequest, BuyPackageResponse } from "@/lib/types";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -10,11 +10,12 @@ export async function POST(request: Request) {
 
   try {
     const result = applyBuyPackage({ packageCode: payload.packageCode });
-    return NextResponse.json({
+    const response: BuyPackageResponse = {
       ok: true,
       receipt: result.receipt,
       balance: result.balance,
-    });
+    };
+    return NextResponse.json(response);
   } catch (error) {
     if (error instanceof Error && error.message === "PACKAGE_NOT_FOUND") {
       return NextResponse.json({ error: "Paquete no encontrado" }, { status: 404 });
